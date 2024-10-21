@@ -32,9 +32,11 @@ export async function login(usernameOrEmail, password) {
       throw new Error("Invalid password");
     }
 
-    const token = jwt.sign({ id: user.id, role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user.id, role: user.role || role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     return token;
   } catch (error) {

@@ -57,19 +57,19 @@ export async function getUser(id) {
 }
 
 export async function updateUser(id, userData, requestingUserId) {
-  const user = await getUser(id);
-  if (!user) {
-    throw new Error("Gebruiker niet gevonden");
+  console.log(`Attempting to update user ${id} by user ${requestingUserId}`);
+  const requestingUser = await prisma.user.findUnique({
+    where: { id: requestingUserId },
+    select: { id: true, role: true },
+  });
+  console.log("Requesting user:", requestingUser);
+
+  if (id !== requestingUserId && requestingUser?.role !== "admin") {
+    console.log("Unauthorized update attempt");
+    throw new Error("Unauthorized");
   }
 
-  if (id !== requestingUserId) {
-    throw new Error("Onbevoegd");
-  }
-
-  if (userData.password) {
-    userData.password = await bcrypt.hash(userData.password, 10);
-  }
-
+  console.log("Proceeding with update");
   return prisma.user.update({
     where: { id },
     data: userData,

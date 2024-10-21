@@ -24,7 +24,11 @@ router.post("/", async (req, res, next) => {
     const host = await createHost(req.body);
     res.status(201).json(host);
   } catch (error) {
-    next(error);
+    if (error.code === "P2002") {
+      res.status(400).json({ error: "Email or username already exists" });
+    } else {
+      next(error);
+    }
   }
 });
 
@@ -42,10 +46,10 @@ router.get("/:id", async (req, res, next) => {
 });
 
 router.put("/:id", authMiddleware, async (req, res, next) => {
-  console.log("Update host - User ID from token:", req.userId);
+  console.log("Update host - User ID from token:", req.user.id);
   console.log("Update host - Requested host ID:", req.params.id);
   try {
-    const host = await updateHost(req.params.id, req.body, req.userId);
+    const host = await updateHost(req.params.id, req.body, req.user.id);
     if (host) {
       res.json(host);
     } else {
@@ -61,7 +65,7 @@ router.put("/:id", authMiddleware, async (req, res, next) => {
 });
 
 router.delete("/:id", authMiddleware, async (req, res, next) => {
-  console.log("Delete host - User ID from token:", req.userId);
+  console.log("Delete host - User ID from token:", req.user.id);
   console.log("Delete host - Requested host ID:", req.params.id);
   try {
     const deleted = await deleteHost(req.params.id, req.userId);

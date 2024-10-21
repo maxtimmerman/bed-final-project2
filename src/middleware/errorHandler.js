@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/node";
 
 export default function errorHandler(err, req, res, next) {
-  // Log the error (you can use console.error for now, we'll update this to use Sentry soon)
   console.error(err);
 
   // Report error to Sentry

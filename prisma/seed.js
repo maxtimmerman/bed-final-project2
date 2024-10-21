@@ -36,10 +36,12 @@ async function main() {
       update: {
         ...user,
         password: hashedPassword,
+        role: "user",
       },
       create: {
         ...user,
         password: hashedPassword,
+        role: "user",
       },
     });
   }
@@ -52,14 +54,15 @@ async function main() {
       update: {
         ...host,
         password: hashedPassword,
+        role: "host",
       },
       create: {
         ...host,
         password: hashedPassword,
+        role: "host",
       },
     });
   }
-
   // Seed amenities
   for (const amenity of amenities) {
     await prisma.amenity.upsert({

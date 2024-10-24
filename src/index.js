@@ -57,16 +57,14 @@ app.use("/login", loginRouter);
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
 
-// // Error handling middleware
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(err.status || 500).json({
-//     error: {
-//       message: err.message || "An unexpected error occurred",
-//       status: err.status || 500,
-//     },
-//   });
-// });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    message: err.message || "Something went wrong!",
+    details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
+});
 
 //Trace errors
 app.use(Sentry.Handlers.errorHandler());

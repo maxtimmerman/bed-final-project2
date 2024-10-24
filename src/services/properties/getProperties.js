@@ -3,44 +3,38 @@ import { PrismaClient } from "@prisma/client";
 const getProperties = async (location, pricePerNight, amenities) => {
   const prisma = new PrismaClient();
 
-  // Log de inkomende parameters
   console.log("Search params:", { location, pricePerNight, amenities });
 
-  const properties = await prisma.property.findMany({
-    where: {
-      ...(location
-        ? {
-            location: {
-              equals: location.trim(), // Verwijder whitespace en gebruik exacte match
-            },
-          }
-        : {}),
-      ...(pricePerNight
-        ? {
-            pricePerNight: {
-              equals: parseFloat(pricePerNight),
-            },
-          }
-        : {}),
-      ...(amenities
-        ? {
-            amenities: {
-              some: {
-                name: amenities,
-              },
-            },
-          }
-        : {}),
-    },
-    include: {
-      amenities: true,
-    },
-  });
+  try {
+    const whereClause = {};
 
-  // Log wat we vonden
-  console.log("Found properties:", properties);
+    if (location) whereClause.location = location;
+    if (pricePerNight) whereClause.pricePerNight = parseFloat(pricePerNight);
+    if (amenities) {
+      whereClause.amenities = {
+        some: {
+          name: amenities,
+        },
+      };
+    }
 
-  return properties;
+    console.log("Where clause:", whereClause);
+
+    const properties = await prisma.property.findMany({
+      where: whereClause,
+      include: {
+        amenities: true,
+        host: true,
+      },
+    });
+
+    console.log("Found properties:", properties);
+
+    return properties;
+  } catch (error) {
+    console.error("Error in getProperties:", error);
+    throw error;
+  }
 };
 
 export default getProperties;

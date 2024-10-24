@@ -54,8 +54,8 @@ router.post("/", auth, async (req, res, next) => {
       totalPrice,
       bookingStatus,
     });
-    res.status(201).send({
-      message: `Account succesfully created`,
+    return res.status(201).send({
+      message: `Booking successfully created`,
       newBooking,
     });
   } catch (err) {
@@ -69,10 +69,12 @@ router.get("/:id", async (req, res, next) => {
     const booking = await getBookingById(id);
 
     if (!booking) {
-      res.status(404).json({ message: `Booking with id ${id} was not found` });
-    } else {
-      res.status(200).json(booking);
+      return res
+        .status(404)
+        .json({ message: `Booking with id ${id} was not found` });
     }
+
+    return res.status(200).json(booking);
   } catch (err) {
     next(err);
   }
@@ -102,14 +104,14 @@ router.put("/:id", auth, async (req, res, next) => {
     });
 
     if (!booking || booking.count === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         message: `Booking with id ${id} was not found`,
       });
-    } else {
-      res.status(200).send({
-        message: `Booking with id ${id} successfully updated`,
-      });
     }
+
+    return res.status(200).send({
+      message: `Booking with id ${id} successfully updated`,
+    });
   } catch (err) {
     next(err);
   }
@@ -121,14 +123,14 @@ router.delete("/:id", auth, async (req, res, next) => {
     const booking = await deleteBookingById(id);
 
     if (!booking || booking.count === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         message: `Booking with id ${id} was not found`,
       });
-    } else {
-      res.status(200).send({
-        message: `Booking with id ${id} successfully deleted`,
-      });
     }
+
+    return res.status(200).send({
+      message: `Booking with id ${id} successfully deleted`,
+    });
   } catch (err) {
     next(err);
   }

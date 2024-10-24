@@ -23,8 +23,7 @@ router.post("/", auth, async (req, res, next) => {
 
     if (!userId || !propertyId || !rating || !comment) {
       return res.status(400).send({
-        message:
-          "All fields are required: userId, propertyId, rating and comment",
+        message: "All fields are required: userId, propertyId, rating, comment",
       });
     }
 
@@ -34,8 +33,8 @@ router.post("/", auth, async (req, res, next) => {
       rating,
       comment,
     });
-    res.status(201).send({
-      message: `Account succesfully created`,
+    return res.status(201).send({
+      message: `Review successfully created`,
       newReview,
     });
   } catch (err) {
@@ -49,10 +48,12 @@ router.get("/:id", async (req, res, next) => {
     const review = await getReviewById(id);
 
     if (!review) {
-      res.status(404).json({ message: `Review with id ${id} was not found` });
-    } else {
-      res.status(200).json(review);
+      return res
+        .status(404)
+        .json({ message: `Review with id ${id} was not found` });
     }
+
+    return res.status(200).json(review);
   } catch (err) {
     next(err);
   }
@@ -62,6 +63,7 @@ router.put("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
     const { userId, propertyId, rating, comment } = req.body;
+
     const review = await updateReviewById(id, {
       userId,
       propertyId,
@@ -70,14 +72,14 @@ router.put("/:id", auth, async (req, res, next) => {
     });
 
     if (!review || review.count === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         message: `Review with id ${id} was not found`,
       });
-    } else {
-      res.status(200).send({
-        message: `Review with id ${id} successfully updated`,
-      });
     }
+
+    return res.status(200).send({
+      message: `Review with id ${id} successfully updated`,
+    });
   } catch (err) {
     next(err);
   }
@@ -89,14 +91,14 @@ router.delete("/:id", auth, async (req, res, next) => {
     const review = await deleteReviewById(id);
 
     if (!review || review.count === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         message: `Review with id ${id} was not found`,
       });
-    } else {
-      res.status(200).send({
-        message: `Review with id ${id} successfully deleted`,
-      });
     }
+
+    return res.status(200).send({
+      message: `Review with id ${id} successfully deleted`,
+    });
   } catch (err) {
     next(err);
   }

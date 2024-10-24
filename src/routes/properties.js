@@ -1,3 +1,4 @@
+// properties.js
 import { Router } from "express";
 import getProperties from "../services/properties/getProperties.js";
 import createProperty from "../services/properties/createProperty.js";
@@ -12,7 +13,7 @@ router.get("/", async (req, res, next) => {
   try {
     const { location, pricePerNight, amenities } = req.query;
     const properties = await getProperties(location, pricePerNight, amenities);
-    res.json(properties);
+    return res.json(properties);
   } catch (err) {
     next(err);
   }
@@ -32,8 +33,6 @@ router.post("/", auth, async (req, res, next) => {
       rating,
     } = req.body;
 
-    console.log("Received property data:", req.body); // Log de ontvangen data
-
     if (
       !title ||
       !description ||
@@ -45,18 +44,6 @@ router.post("/", auth, async (req, res, next) => {
       !hostId ||
       !rating
     ) {
-      console.log("Missing fields:", {
-        // Log welke velden ontbreken
-        title: !title,
-        description: !description,
-        location: !location,
-        pricePerNight: !pricePerNight,
-        bedroomCount: !bedroomCount,
-        bathRoomCount: !bathRoomCount,
-        maxGuestCount: !maxGuestCount,
-        hostId: !hostId,
-        rating: !rating,
-      });
       return res.status(400).send({
         message:
           "All fields are required: title, description, location, pricePerNight, bedroomCount, bathRoomCount, maxGuestCount, hostId, rating",
@@ -74,7 +61,7 @@ router.post("/", auth, async (req, res, next) => {
       hostId,
       rating,
     });
-    res.status(201).send({
+    return res.status(201).send({
       message: `Property successfully created`,
       newProperty,
     });
@@ -89,10 +76,12 @@ router.get("/:id", async (req, res, next) => {
     const property = await getPropertyById(id);
 
     if (!property) {
-      res.status(404).json({ message: `Property with id ${id} was not found` });
-    } else {
-      res.status(200).json(property);
+      return res
+        .status(404)
+        .json({ message: `Property with id ${id} was not found` });
     }
+
+    return res.status(200).json(property);
   } catch (err) {
     next(err);
   }
@@ -112,6 +101,7 @@ router.put("/:id", auth, async (req, res, next) => {
       hostId,
       rating,
     } = req.body;
+
     const property = await updatePropertyById(id, {
       title,
       description,
@@ -125,14 +115,14 @@ router.put("/:id", auth, async (req, res, next) => {
     });
 
     if (!property || property.count === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         message: `Property with id ${id} was not found`,
       });
-    } else {
-      res.status(200).send({
-        message: `Property with id ${id} successfully updated`,
-      });
     }
+
+    return res.status(200).send({
+      message: `Property with id ${id} successfully updated`,
+    });
   } catch (err) {
     next(err);
   }
@@ -144,14 +134,14 @@ router.delete("/:id", auth, async (req, res, next) => {
     const property = await deletePropertyById(id);
 
     if (!property || property.count === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         message: `Property with id ${id} was not found`,
       });
-    } else {
-      res.status(200).send({
-        message: `Property with id ${id} successfully deleted`,
-      });
     }
+
+    return res.status(200).send({
+      message: `Property with id ${id} successfully deleted`,
+    });
   } catch (err) {
     next(err);
   }

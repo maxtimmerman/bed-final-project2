@@ -1,4 +1,3 @@
-// properties.js
 import { Router } from "express";
 import getProperties from "../services/properties/getProperties.js";
 import createProperty from "../services/properties/createProperty.js";
@@ -44,7 +43,7 @@ router.post("/", auth, async (req, res, next) => {
       !hostId ||
       !rating
     ) {
-      return res.status(400).send({
+      return res.status(400).json({
         message:
           "All fields are required: title, description, location, pricePerNight, bedroomCount, bathRoomCount, maxGuestCount, hostId, rating",
       });
@@ -61,9 +60,9 @@ router.post("/", auth, async (req, res, next) => {
       hostId,
       rating,
     });
-    return res.status(201).send({
+    return res.status(201).json({
       message: `Property successfully created`,
-      newProperty,
+      property: newProperty,
     });
   } catch (err) {
     next(err);
@@ -76,12 +75,12 @@ router.get("/:id", async (req, res, next) => {
     const property = await getPropertyById(id);
 
     if (!property) {
-      return res
-        .status(404)
-        .json({ message: `Property with id ${id} was not found` });
+      return res.status(404).json({
+        message: `Property with id ${id} was not found`,
+      });
     }
 
-    return res.status(200).json(property);
+    return res.json(property);
   } catch (err) {
     next(err);
   }
@@ -90,37 +89,15 @@ router.get("/:id", async (req, res, next) => {
 router.put("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const {
-      title,
-      description,
-      location,
-      pricePerNight,
-      bedroomCount,
-      bathRoomCount,
-      maxGuestCount,
-      hostId,
-      rating,
-    } = req.body;
+    const updatedProperty = await updatePropertyById(id, req.body);
 
-    const property = await updatePropertyById(id, {
-      title,
-      description,
-      location,
-      pricePerNight,
-      bedroomCount,
-      bathRoomCount,
-      maxGuestCount,
-      hostId,
-      rating,
-    });
-
-    if (!property || property.count === 0) {
+    if (!updatedProperty) {
       return res.status(404).json({
         message: `Property with id ${id} was not found`,
       });
     }
 
-    return res.status(200).send({
+    return res.json({
       message: `Property with id ${id} successfully updated`,
     });
   } catch (err) {
@@ -131,15 +108,15 @@ router.put("/:id", auth, async (req, res, next) => {
 router.delete("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const property = await deletePropertyById(id);
+    const deletedProperty = await deletePropertyById(id);
 
-    if (!property || property.count === 0) {
+    if (!deletedProperty) {
       return res.status(404).json({
         message: `Property with id ${id} was not found`,
       });
     }
 
-    return res.status(200).send({
+    return res.json({
       message: `Property with id ${id} successfully deleted`,
     });
   } catch (err) {

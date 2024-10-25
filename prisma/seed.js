@@ -16,7 +16,7 @@ async function main() {
   const { hosts } = hostData;
   const { amenities } = amenityData;
 
-  // 1. Eerst Users
+  // 1. Users
   for (const user of users) {
     await prisma.user.upsert({
       where: { id: user.id },
@@ -25,7 +25,7 @@ async function main() {
     });
   }
 
-  // 2. Dan Hosts
+  // 2. Hosts
   for (const host of hosts) {
     await prisma.host.upsert({
       where: { id: host.id },
@@ -34,7 +34,7 @@ async function main() {
     });
   }
 
-  // 3. Dan Amenities (verplaatst naar vóór properties)
+  // 3. Amenities
   for (const amenity of amenities) {
     await prisma.amenity.upsert({
       where: { id: amenity.id },
@@ -43,7 +43,7 @@ async function main() {
     });
   }
 
-  // 4. Dan Properties met Amenities
+  // 4. Properties met Amenities
   for (const property of properties) {
     const amenityIds = amenities.slice(0, 3).map((a) => ({ id: a.id })); // Pak de eerste 3 amenities
     await prisma.property.upsert({
@@ -58,7 +58,7 @@ async function main() {
     });
   }
 
-  // 5. Dan Bookings
+  // 5. Bookings
   for (const booking of bookings) {
     await prisma.booking.upsert({
       where: { id: booking.id },
@@ -67,7 +67,7 @@ async function main() {
     });
   }
 
-  // 6. Als laatste Reviews
+  // 6. Reviews
   for (const review of reviews) {
     await prisma.review.upsert({
       where: { id: review.id },

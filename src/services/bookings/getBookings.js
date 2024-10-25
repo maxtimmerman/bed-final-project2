@@ -4,7 +4,7 @@ const getBookings = async (userId) => {
   const prisma = new PrismaClient();
   const bookings = await prisma.booking.findMany({
     where: {
-      ...(userId ? { userId: userId } : {}), // Exacte match voor userId
+      ...(userId ? { userId: userId } : {}),
     },
   });
 

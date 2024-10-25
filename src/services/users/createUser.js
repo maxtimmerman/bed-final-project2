@@ -7,8 +7,8 @@ const createUser = async (newUser) => {
     const user = await prisma.user.create({
       data: {
         ...newUser,
-        username: `${timestamp}_${newUser.username}`, // Maak username uniek
-        email: `${timestamp}_${newUser.email}`, // Maak email uniek
+        username: `${timestamp}_${newUser.username}`,
+        email: `${timestamp}_${newUser.email}`,
       },
     });
     return user;

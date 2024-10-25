@@ -7,8 +7,8 @@ const createHost = async (newHost) => {
     const host = await prisma.host.create({
       data: {
         ...newHost,
-        username: `${timestamp}_${newHost.username}`, // Maak username uniek
-        email: `${timestamp}_${newHost.email}`, // Maak email uniek
+        username: `${timestamp}_${newHost.username}`, 
+        email: `${timestamp}_${newHost.email}`, 
       },
     });
     return host;

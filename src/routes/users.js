@@ -20,7 +20,6 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", auth, async (req, res, next) => {
   try {
-    console.log("Creating user with data:", req.body); // Debug logging
     const { username, password, name, email, phoneNumber, profilePicture } =
       req.body;
 

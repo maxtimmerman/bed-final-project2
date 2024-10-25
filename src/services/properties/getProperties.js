@@ -3,8 +3,6 @@ import { PrismaClient } from "@prisma/client";
 const getProperties = async (location, pricePerNight, amenities) => {
   const prisma = new PrismaClient();
 
-  console.log("Search params:", { location, pricePerNight, amenities });
-
   try {
     const whereClause = {};
 
@@ -18,8 +16,6 @@ const getProperties = async (location, pricePerNight, amenities) => {
       };
     }
 
-    console.log("Where clause:", whereClause);
-
     const properties = await prisma.property.findMany({
       where: whereClause,
       include: {
@@ -28,11 +24,8 @@ const getProperties = async (location, pricePerNight, amenities) => {
       },
     });
 
-    console.log("Found properties:", properties);
-
     return properties;
   } catch (error) {
-    console.error("Error in getProperties:", error);
     throw error;
   }
 };

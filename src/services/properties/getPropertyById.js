@@ -2,11 +2,20 @@ import { PrismaClient } from "@prisma/client";
 
 const getPropertyById = async (id) => {
   const prisma = new PrismaClient();
-  const property = await prisma.property.findUnique({
-    where: { id },
-  });
+  try {
+    const property = await prisma.property.findUnique({
+      where: { id: id.toString() },
+    });
 
-  return property;
+    if (!property) {
+      return null;
+    }
+
+    return property;
+  } catch (error) {
+    console.error("Error in getPropertyById:", error);
+    throw error;
+  }
 };
 
 export default getPropertyById;

@@ -8,7 +8,7 @@
     "seed": "node ./prisma/seed.js"
   },
   "scripts": {
-    "dev": "nodemon src/index.js",
+    "dev": "nodemon --no-warnings src/index.js",
     "test-positive": "npx prisma migrate reset --force && newman run \"./postman/collections/Bookings API.json\" -e \"./postman/environments/Local.postman_environment.json\"",
     "test-negative": "npx prisma migrate reset --force && newman run \"./postman/collections/Bookings API Negative.json\" -e \"./postman/environments/Local.postman_environment.json\"",
     "test": "npx prisma migrate reset --force && npm run test-positive && npm run test-negative"

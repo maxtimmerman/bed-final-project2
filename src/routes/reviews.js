@@ -11,7 +11,7 @@ const router = Router();
 router.get("/", async (req, res, next) => {
   try {
     const reviews = await getReviews();
-    res.json(reviews);
+    return res.json(reviews);
   } catch (err) {
     next(err);
   }
@@ -22,7 +22,7 @@ router.post("/", auth, async (req, res, next) => {
     const { userId, propertyId, rating, comment } = req.body;
 
     if (!userId || !propertyId || !rating || !comment) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: "All fields are required: userId, propertyId, rating, comment",
       });
     }
@@ -33,9 +33,9 @@ router.post("/", auth, async (req, res, next) => {
       rating,
       comment,
     });
-    return res.status(201).send({
+    return res.status(201).json({
       message: `Review successfully created`,
-      newReview,
+      review: newReview,
     });
   } catch (err) {
     next(err);
@@ -48,12 +48,12 @@ router.get("/:id", async (req, res, next) => {
     const review = await getReviewById(id);
 
     if (!review) {
-      return res
-        .status(404)
-        .json({ message: `Review with id ${id} was not found` });
+      return res.status(404).json({
+        message: `Review with id ${id} was not found`,
+      });
     }
 
-    return res.status(200).json(review);
+    return res.json(review);
   } catch (err) {
     next(err);
   }
@@ -62,22 +62,15 @@ router.get("/:id", async (req, res, next) => {
 router.put("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { userId, propertyId, rating, comment } = req.body;
+    const updatedReview = await updateReviewById(id, req.body);
 
-    const review = await updateReviewById(id, {
-      userId,
-      propertyId,
-      rating,
-      comment,
-    });
-
-    if (!review || review.count === 0) {
+    if (!updatedReview) {
       return res.status(404).json({
         message: `Review with id ${id} was not found`,
       });
     }
 
-    return res.status(200).send({
+    return res.json({
       message: `Review with id ${id} successfully updated`,
     });
   } catch (err) {
@@ -88,15 +81,15 @@ router.put("/:id", auth, async (req, res, next) => {
 router.delete("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const review = await deleteReviewById(id);
+    const deletedReview = await deleteReviewById(id);
 
-    if (!review || review.count === 0) {
+    if (!deletedReview) {
       return res.status(404).json({
         message: `Review with id ${id} was not found`,
       });
     }
 
-    return res.status(200).send({
+    return res.json({
       message: `Review with id ${id} successfully deleted`,
     });
   } catch (err) {
